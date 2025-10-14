@@ -7,7 +7,7 @@ typedef struct {
     int vitesse;
     int niveau_oxygene;
     int niveau_oxygene_max;
-    int niveau_fatigue; // 0 à 5
+    int fatigue; // 0-100%
 } Plongeur;
 
 Plongeur creer_plongeur();

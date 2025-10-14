@@ -3,7 +3,7 @@
 #include <time.h>
 #include <windows.h>  //pour les sleeps pour les temps de pauses entre plusieurs actions
 
-#include "combat.h"
+#include "combat.h"  // le fichier combat.h
 
 //-------------------------------------------
 //Fonction pour les calculs des degats
@@ -57,9 +57,9 @@ void seconomiser(Plongeur *p) {
     printf(" Votre fatigue diminue a %d%%\n", p->fatigue);
 }
 
-//-----------------------------
+//----------------------------------------------------
 // Fonction de l'attaque de la créature sur joueur
-//-------------------------------
+//----------------------------------------------------
 void attaquer_plongeur(CreatureMarine *c, Plongeur *p) {
     int degats = degats_infliges(c->attaque_min, c->attaque_max, 0);
     p->points_de_vie -= degats;
@@ -70,9 +70,9 @@ void attaquer_plongeur(CreatureMarine *c, Plongeur *p) {
     printf("%s vous attaque et inflige %d degats !\n", c->nom, degats);
 }
 
-//-----------------
+//-------------------
 //Phases du combat
-//-----------------
+//-------------------
 void tour_combat(Plongeur *p, CreatureMarine *c) {
     srand(time(NULL));
     int choix;
@@ -81,15 +81,15 @@ void tour_combat(Plongeur *p, CreatureMarine *c) {
     p->fatigue=0;  // notre fatigue initiale
 
     while (p->points_de_vie > 0 && c->points_de_vie_actuels > 0) {
-        printf("\n--- etat actuel ---\n");
+        printf("\n------------------- ETAT ACTUEL -------------------\n");
         printf("Plongeur : %d/%d PV (Vitesse : %d, Fatigue: %d%%)\n", p->points_de_vie, p->points_de_vie_max, p->vitesse, p->fatigue);
-        printf("%s : %d/%d PV (Vitesse : %d)\n", c->nom, c->points_de_vie_actuels, c->points_de_vie_max, c->vitesse);
-
+        printf("%s : %d/%d PV (Vitesse : %d)", c->nom, c->points_de_vie_actuels, c->points_de_vie_max, c->vitesse);
+        printf("\n---------------------------------------------------\n");
 
     //Choix des actions
         if (p->fatigue >= 90) {
             printf("\nVous etes trop creve pour attaquer \n");
-            printf("1 - S'économiser (-30%% de fatigue)\n> ");
+            printf("1 - S'economiser (-30%% de fatigue)\n> ");
             scanf("%d", &choix);
             if (choix == 1)
                 seconomiser(p);
@@ -161,7 +161,6 @@ void tour_combat(Plongeur *p, CreatureMarine *c) {
 
         Sleep(1000);  //pause entre les tours
     }
-
 
     // Fin du combat
     if (p->points_de_vie <= 0)

@@ -5,6 +5,12 @@
 
 #include "combat.h"  // le fichier combat.h
 
+#define FATIGUE_MAX 100
+#define COUT_ATT_LEGERE 10
+#define COUT_ATT_LOURDE 20
+#define FATIGUE_REPOS 30
+#define LIMITE_FATIGUE 90
+
 //-------------------------------------------
 //Fonction pour les calculs des degats
 //----------------------------------------
@@ -22,26 +28,34 @@ int degats_infliges(int attaque_min, int attaque_max, int defense) {
 //---------------------------------------------------
 void attaquer_creature(Plongeur *p, CreatureMarine *c, int type) {
     int degats;
+    int cout_fatigue;
+
+    if (type==1){
+        cout_fatigue= COUT_ATT_LEGERE;
+    }
+    else{
+        cout_fatigue= COUT_ATT_LOURDE;
+    }
 
     if (type == 1) { // attaque légère
         degats = degats_infliges(8, 14, c->defense);
         printf("Vous effectuez une attaque legere.\n");
-        p->fatigue += 10; //fatigue +10%
     } else { // attaque lourde
         degats = degats_infliges(15, 25, c->defense);
         printf("Vous effectuez une attaque lourde.\n");
-        p->fatigue += 20;  //fatigue +20%
     }
 
-    if (p->fatigue > 100) {
-        p->fatigue = 100;
+    p->fatigue +=cout_fatigue; //ajout à chaque tour de la fatigue en fonction du type d'attaque (+10% si attaque legere ou +20% si attaque lourde)
+
+    if (p->fatigue > FATIGUE_MAX) {
+        p->fatigue = FATIGUE_MAX;
     }
 
     c->points_de_vie_actuels -= degats;
     if (c->points_de_vie_actuels < 0) {
         c->points_de_vie_actuels = 0;
     }
-    printf("Vous infligez %d degats à %s !\n", degats, c->nom);
+    printf("Vous infligez %d degats a %s !\n", degats, c->nom);
 }
 
 //------------------------------------------------------------
@@ -49,7 +63,7 @@ void attaquer_creature(Plongeur *p, CreatureMarine *c, int type) {
 //-------------------------------------------------------------
 void seconomiser(Plongeur *p) {
     printf("\nVous decidez de vous economiser ce tour\n");
-    p->fatigue -= 30;  //enlève -30% de fatigue
+    p->fatigue -= FATIGUE_REPOS;  //enlève -30% de fatigue
     if (p->fatigue < 0) {
         p->fatigue = 0;
     }
@@ -87,9 +101,9 @@ void tour_combat(Plongeur *p, CreatureMarine *c) {
         printf("\n---------------------------------------------------\n");
 
     //Choix des actions
-        if (p->fatigue >= 90) {
+        if (p->fatigue + COUT_ATT_LEGERE >= FATIGUE_MAX && p->fatigue + COUT_ATT_LOURDE >= FATIGUE_MAX) {
             printf("\nVous etes trop creve pour attaquer \n");
-            printf("1 - S'economiser (-30%% de fatigue)\n> ");
+            printf("1 - S'economiser (-%d%% de fatigue)\n> ", FATIGUE_REPOS);
             scanf("%d", &choix);
             if (choix == 1)
                 seconomiser(p);
@@ -98,9 +112,9 @@ void tour_combat(Plongeur *p, CreatureMarine *c) {
                 choix=0;
         }
         else {
-            printf("\n1 - Attaque legere (+10%% fatigue)\n");
-            printf("2 - Attaque lourde (+20%% fatigue)\n");
-            printf("3 - S'economiser (-30%% fatigue)\n");
+            printf("\n1 - Attaque legere (+%d%% fatigue)\n", COUT_ATT_LEGERE);
+            printf("2 - Attaque lourde (+%d%% fatigue)\n", COUT_ATT_LOURDE);
+            printf("3 - S'economiser (-%d%% fatigue)\n", FATIGUE_REPOS);
             printf("Quel est votre choix ?");
             scanf("%d", &choix);
 

@@ -18,10 +18,10 @@ int main()
 
     while (!correct)
     {
-        printf("Entrez la Profondeur (1, 2, 3, ..):  ");
+        printf("Entrez la Profondeur (1, 2, 3, 4, ..):  ");
         scanf("%d", &profondeur);
 
-        if (profondeur == 0 || profondeur > 3)
+        if (profondeur == 0 || profondeur > 4)
         {
             printf("Profondeur invalide !\n");
         }else{
@@ -38,9 +38,12 @@ int main()
     else if (profondeur == 2) {
         nbr_mobs = 2;
     }
-    else {
+    else if(profondeur == 3) {
         nbr_mobs = 3;
+    }else{
+        nbr_mobs = 4;
     }
+
     printf("=== Creatures generees pour Profondeur %d ===\n", profondeur);
     for (int i = 0; i < nbr_mobs; i++) {
         printf("%d - %s (PV: %d, ATK: %d-%d, DEF: %d, VITESSE: %d, EFFET_SPECIAL: %s)\n",
@@ -57,7 +60,7 @@ int main()
     printf("#################### COMBAT ####################\n");
 
     CreatureMarine *creatures_triees = trier_creatures(creatures, nbr_mobs);
-    tour_combat(&p, creatures_triees, nbr_mobs);
+    tour_combat(&p, creatures_triees, nbr_mobs, profondeur);
 
     printf("\nFin du combat.\n");
 

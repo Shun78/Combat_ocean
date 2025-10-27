@@ -4,10 +4,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+//Le mot-clé static limite la portée de cette variable au fichier courant
+static int prochain_id = 1;
+
 CreatureMarine cree_creature(const char *nom) {
     CreatureMarine c;
     c.est_vivant = 1;
-    c.id = 0;
+    c.id = prochain_id++;
 
     strcpy(c.nom, nom);
 
@@ -16,36 +19,40 @@ CreatureMarine cree_creature(const char *nom) {
         c.points_de_vie_max = rand() % 21 + 20;
         c.attaque_min = 8;
         c.attaque_max = 15;
-        c.vitesse = 4;
+        c.vitesse = 6;
+        strcpy(c.effet_special, "paralysie");//Réduit les attaques du joueur de 1 au prochain tour
     }
     else if (strcmp(nom, "Poisson-Epee") == 0) {
         c.points_de_vie_max = rand() % 21 + 70;
         c.attaque_min = 18;
         c.attaque_max = 28;
         c.vitesse = 3;
+        strcpy(c.effet_special, "Charge"); //Ignore 2 points de défense
     }
     else if (strcmp(nom, "Requin") == 0) {
         c.points_de_vie_max = rand() % 41 + 60;
         c.attaque_min = 15;
         c.attaque_max = 25;
         c.vitesse = 5;
+        strcpy(c.effet_special, "Frenesie ");//+30% dégâts si PV < 50%
     }
     else if (strcmp(nom, "Kraken") == 0) {
         c.points_de_vie_max = rand() % 61 + 120;
         c.attaque_min = 25;
-        c.attaque_max = 30;
+        c.attaque_max = 40;
         c.vitesse = 2;
+        strcpy(c.effet_special, "Etreinte");//2 attaques consécutives
     }
     else if (strcmp(nom, "CrabeGeant") == 0) {
         c.points_de_vie_max = rand() % 41 + 80;
         c.attaque_min = 12;
         c.attaque_max = 20;
         c.vitesse = 1;
+        strcpy(c.effet_special, "Carapace"); //Réduit tous les dégâts subis de 20%
     }
 
     c.points_de_vie_actuels = c.points_de_vie_max;
     c.defense = 5;
-    strcpy(c.effet_special, "Aucun");
 
     return c;
 }
@@ -66,11 +73,14 @@ CreatureMarine *cree_creatures(int Profondeur){
         // combat 1v2
         nbr_mobs = 2;
         dificulte = 0.4;
-    }else if (Profondeur >=3){
+    }else if (Profondeur ==3){
         // combat 1v3
         nbr_mobs = 3;
-        dificulte = 0.9;
+        dificulte = 0.5;
 
+    }else if(Profondeur >= 4){
+        nbr_mobs = 4;
+        dificulte = 0.95;
     }
     
     CreatureMarine *creatures = malloc(sizeof(CreatureMarine) * (nbr_mobs));

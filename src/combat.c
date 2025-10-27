@@ -8,6 +8,7 @@
 #define FATIGUE_MAX 100
 #define COUT_ATT_LEGERE 10
 #define COUT_ATT_LOURDE 20
+#define COUT_ATT_COMPETENCE 30
 #define FATIGUE_REPOS 30
 #define LIMITE_FATIGUE 90
 
@@ -38,6 +39,8 @@ int degats_infliges(int attaque_min, int attaque_max, int defense)
 //---------------------------------------------------
 void attaquer_creature(Plongeur *p, CreatureMarine *c, int type)
 {
+    // type = 4 (attaque competence)
+
     int degats;
     int cout_fatigue;
 
@@ -45,9 +48,11 @@ void attaquer_creature(Plongeur *p, CreatureMarine *c, int type)
     {
         cout_fatigue = COUT_ATT_LEGERE;
     }
-    else
+    else if(type == 2)
     {
         cout_fatigue = COUT_ATT_LOURDE;
+    }else if(type == 4){
+        cout_fatigue = COUT_ATT_COMPETENCE;
     }
 
     if (type == 1)
@@ -55,10 +60,13 @@ void attaquer_creature(Plongeur *p, CreatureMarine *c, int type)
         degats = degats_infliges(8, 14, c->defense);
         printf("Vous effectuez une attaque legere.\n");
     }
-    else
+    else if(type == 2) 
     { // attaque lourde
         degats = degats_infliges(15, 25, c->defense);
         printf("Vous effectuez une attaque lourde.\n");
+    }else{
+        degats = degats_infliges(15, 25, c->defense);
+        printf("Vous effectuez une attaque competence.\n");
     }
 
     p->fatigue += cout_fatigue; // ajout à chaque tour de la fatigue en fonction du type d'attaque (+10% si attaque legere ou +20% si attaque lourde)
@@ -74,6 +82,39 @@ void attaquer_creature(Plongeur *p, CreatureMarine *c, int type)
         c->points_de_vie_actuels = 0;
     }
     printf("Vous infligez %d degats a %s !\n", degats, c->nom);
+}
+
+//-----------------------------------------------------
+// Fonction pour calculer la consommation de l'O2 
+//-----------------------------------------------------
+void consommation_o2(Plongeur *p, int type_attack, int profondeur) {
+    int consommation = 0;
+
+    // Base selon type d'attaque
+    if (type_attack == 1 || type_attack == 2) {
+        // Attaque normale : -2 à -4 selon profondeur
+        consommation = 2 + (rand() % 3); // 2, 3 ou 4
+    } 
+    else if (type_attack == 4) {
+        // Compétence spéciale : -5 à -8
+        consommation = 5 + (rand() % 4); // 5, 6, 7, 8
+    }
+
+    // Plus on descend, plus on consomme d’oxygène
+    if (profondeur == 2) {
+        consommation += 1;  
+    } 
+    else if (profondeur == 3) {
+        consommation += 2;  
+    } 
+    else if (profondeur >= 4) {
+        consommation += 3;  
+    }
+
+    p->niveau_oxygene -= consommation;
+    if (p->niveau_oxygene < 0)
+        p->niveau_oxygene = 0;
+
 }
 
 //------------------------------------------------------------
@@ -96,6 +137,8 @@ void seconomiser(Plongeur *p)
 //----------------------------------------------------
 void attaquer_plongeur(CreatureMarine *c, Plongeur *p)
 {
+    const char *effets_creatures[] = {"paralysie", "Charge", "Frenesie", "Etreinte", "Carapace"};
+
     int degats = degats_infliges(c->attaque_min, c->attaque_max, 0);
     p->points_de_vie -= degats;
     if (p->points_de_vie < 0)
@@ -109,7 +152,7 @@ void attaquer_plongeur(CreatureMarine *c, Plongeur *p)
 //-------------------
 // Phases du combat
 //-------------------
-void tour_combat(Plongeur *p, CreatureMarine *creatures, int nbr_mobs)
+void tour_combat(Plongeur *p, CreatureMarine *creatures, int nbr_mobs, int profondeur)
 {
     srand(time(NULL));
     int choix;
@@ -117,9 +160,9 @@ void tour_combat(Plongeur *p, CreatureMarine *creatures, int nbr_mobs)
 
     while (p->points_de_vie > 0)
     {
-        printf("\n=========================================\n");
-        printf("VOS STATS : PV = %d | FATIGUE = %d%% | VITESSE = %d\n", p->points_de_vie, p->fatigue, p->vitesse);
-        printf("=========================================\n");
+        printf("\n=========================================================\n");
+        printf("VOS STATS : PV = %d | FATIGUE = %d%% | VITESSE = %d | O2 = %d\n", p->points_de_vie, p->fatigue, p->vitesse, p->niveau_oxygene);
+        printf("===========================================================\n");
         printf("CREATURES ENNEMIES :\n");
         for (int i = 0; i < nbr_mobs; i++)
         {
@@ -150,18 +193,20 @@ void tour_combat(Plongeur *p, CreatureMarine *creatures, int nbr_mobs)
             printf("\n1 - Attaque legere (+%d%% fatigue)\n", COUT_ATT_LEGERE);
             printf("2 - Attaque lourde (+%d%% fatigue)\n", COUT_ATT_LOURDE);
             printf("3 - S'economiser (-%d%% fatigue)\n", FATIGUE_REPOS);
+            printf("4- Competence speciale (+%d%% fatigue)\n", COUT_ATT_COMPETENCE);
             printf("Quel est votre choix ? ");
             scanf("%d", &choix);
 
-            if (choix < 1 || choix > 3)
+            if (choix < 1 || choix > 4)
             {
                 printf("Choix invalide, vous perdez votre tour !\n");
                 choix = 0;
             }
         }
 
-        if (choix == 1 || choix == 2)
+        if (choix == 1 || choix == 2 || choix == 4)
         {
+            // afficher les mobs
             printf("\nChoisissez la creature a attaquer :\n");
             for (int i = 0; i < nbr_mobs; i++)
             {
@@ -182,12 +227,23 @@ void tour_combat(Plongeur *p, CreatureMarine *creatures, int nbr_mobs)
                 scanf("%d", &choix_mob);
             }
 
+            //===============================================
+            // Recuperer l'effet de la creature a attaquer
+            char effet_mob[20];
+            strcpy(effet_mob, creatures[choix_mob-1].effet_special);
+            if(strcmp(effet_mob, "Carapace")){
+
+            }
+
+            //attaquer la creature
             attaquer_creature(p, &creatures[choix_mob - 1], choix);
             if (creatures[choix_mob - 1].points_de_vie_actuels <= 0)
             {
                 creatures[choix_mob - 1].est_vivant = 0;
                 printf("\n%s est vaincu !\n", creatures[choix_mob - 1].nom);
             }
+            //consommer O2
+            consommation_o2(p, choix, profondeur);
         }
         else if (choix == 3)
         {
@@ -196,11 +252,18 @@ void tour_combat(Plongeur *p, CreatureMarine *creatures, int nbr_mobs)
 
         Sleep(1000);
 
+        
         // attack des creatures
         for (int i = 0; i < nbr_mobs; i++)
         {
             if (creatures[i].est_vivant)
             {
+                // recuperer l'effet speciale de la creature
+                //{"paralysie", "Charge", "Frenesie", "Etreinte", "Carapace"};
+                
+                
+                // dans la fonction attaquer: Fresnie, Charge 
+
                 printf("\n%s attaque en premier !\n", creatures[i].nom);
                 Sleep(1000);
                 attaquer_plongeur(&creatures[i], p);
@@ -214,7 +277,7 @@ void tour_combat(Plongeur *p, CreatureMarine *creatures, int nbr_mobs)
             break;
         }
 
-        // Check if all creatures are dead
+        // Verifier si toutes les mobs sont morts
         int toutes_mortes = 1;
         for (int i = 0; i < nbr_mobs; i++)
         {

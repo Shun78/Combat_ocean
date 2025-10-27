@@ -34,13 +34,13 @@ CreatureMarine cree_creature(const char *nom) {
         c.attaque_min = 15;
         c.attaque_max = 25;
         c.vitesse = 5;
-        strcpy(c.effet_special, "Frenesie ");//+30% dégâts si PV < 50%
+        strcpy(c.effet_special, "Frenesie");//+30% dégâts si PV < 50%
     }
     else if (strcmp(nom, "Kraken") == 0) {
         c.points_de_vie_max = rand() % 61 + 120;
         c.attaque_min = 25;
         c.attaque_max = 40;
-        c.vitesse = 2;
+        c.vitesse = 2; // 2 a la base
         strcpy(c.effet_special, "Etreinte");//2 attaques consécutives
     }
     else if (strcmp(nom, "CrabeGeant") == 0) {
@@ -67,12 +67,12 @@ CreatureMarine *cree_creatures(int Profondeur){
     if (Profondeur == 1){
         // combat 1v1
         nbr_mobs = 1;
-        dificulte = 0.2;
+        dificulte = 0.1;
     
     }else if(Profondeur == 2){
         // combat 1v2
         nbr_mobs = 2;
-        dificulte = 0.4;
+        dificulte = 0.2;
     }else if (Profondeur ==3){
         // combat 1v3
         nbr_mobs = 3;
@@ -80,21 +80,24 @@ CreatureMarine *cree_creatures(int Profondeur){
 
     }else if(Profondeur >= 4){
         nbr_mobs = 4;
-        dificulte = 0.95;
+        dificulte = 0.9;
     }
     
     CreatureMarine *creatures = malloc(sizeof(CreatureMarine) * (nbr_mobs));
 
     for (int i = 0; i < nbr_mobs; i++) {
-        double r = (double)rand() / RAND_MAX;
+        int x = rand() % 11;
+        double r = x*0.1; // 0, 0.1, 0.2, ....,1
         int random_number;
 
         if (r > dificulte) {
             // mob facile
+            printf("easy r = %f \n", r);
             random_number = rand() % 2; // 0 or 1
             strcpy(nom, listes_creatures[random_number]);
         } else {
             // mob difficile
+            printf("hard r = %f \n", r);
             random_number = 2 + rand() % 3; // 2, 3, 4
             strcpy(nom, listes_creatures[random_number]);
         }

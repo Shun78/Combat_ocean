@@ -1,5 +1,6 @@
 #ifndef PLONGEUR_H
 #define PLONGEUR_H
+#include "armure.h"
 
 typedef struct {
     int points_de_vie;
@@ -8,6 +9,8 @@ typedef struct {
     int niveau_oxygene;
     int niveau_oxygene_max;
     int fatigue; // 0-100%
+    char armure[20];//provisoire
+    char arm[20];//provisoire
 } Plongeur;
 
 Plongeur creer_plongeur();

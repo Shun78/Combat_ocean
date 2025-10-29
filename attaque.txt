@@ -1,0 +1,50 @@
+ // attack des creatures
+        // for (int i = 0; i < nbr_mobs; i++)
+        // {
+        //     int chance_effet = rand() % 100; // 0 a 99
+        //     int effet_active = 0;
+
+        //     if (chance_effet < 50)
+        //     {
+        //         effet_active = 1;
+        //     }
+        //     if (creatures[i].est_vivant)
+        //     {
+        //         // recuperer l'effet speciale de la creature en defense
+        //         //{"paralysie", "Charge", "Frenesie", "Etreinte", "Carapace"};
+        //         char effet_mob_def[20];
+        //         strcpy(effet_mob_def, creatures[i].effet_special);
+
+        //         // dans la fonction attaquer: Fresnie, Charge
+
+        //         printf("\n%s attaque en premier !\n", creatures[i].nom);
+        //         Sleep(1000);
+
+        //         // si mob = Kraken => 2 attaques consecutives
+        //         if (strcmp(effet_mob_def, "Etreinte") == 0 && effet_active == 1)
+        //         {
+        //             printf("EFFET SPECIALE UTILISER: 2 attaques consecutives: \n");
+        //             for (int j = 0; j < 2; j++)
+        //             {
+        //                 printf("Attaque numero: %d \n", j + 1);
+        //                 attaquer_plongeur(&creatures[i], p);
+        //                 Sleep(3000);
+        //             }
+        //             // si meduse en reduit le nombre d'attaque de prochaine tour
+        //         }
+        //         else if (strcmp(effet_mob_def, "paralysie") == 0 && effet_active == 1)
+        //         {
+        //             printf("EFFET SPECIALE : PARALYSIE\n");
+        //             printf("Fatigue Reduit de 10\n");
+        //             p->fatigue -= 10;
+        //             attaquer_plongeur(&creatures[i], p);
+        //             Sleep(3000);
+        //         }
+        //         else
+        //         {
+        //             attaquer_plongeur(&creatures[i], p);
+        //         }
+
+        //         break;
+        //     }
+        // }

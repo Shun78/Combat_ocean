@@ -4,6 +4,6 @@
 #include "plongeur.h"
 #include "creatures.h"
 
-void tour_combat(Plongeur *p, CreatureMarine *c);
+void tour_combat(Plongeur *p, CreatureMarine *creatures, int nbr_mobs, int profondeur);
 
 #endif

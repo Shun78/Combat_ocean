@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include "plongeur.h"
+#include <stdlib.h>
+#include <string.h>
 
 Plongeur creer_plongeur() {
     Plongeur p;
@@ -9,6 +11,8 @@ Plongeur creer_plongeur() {
     p.niveau_oxygene_max = 100;
     p.niveau_oxygene = 100;
     p.fatigue = 0;
+    strcpy(p.armure, "aucun");
+    strcpy(p.arm, "gold");
     return p;
 }
 

@@ -16,6 +16,7 @@ int main()
     Plongeur p = creer_plongeur();
     int profondeur = 0;
 
+
     while (!correct)
     {
         printf("Entrez la Profondeur (1, 2, 3, 4, ..):  ");

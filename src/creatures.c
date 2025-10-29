@@ -92,12 +92,10 @@ CreatureMarine *cree_creatures(int Profondeur){
 
         if (r > dificulte) {
             // mob facile
-            printf("easy r = %f \n", r);
             random_number = rand() % 2; // 0 or 1
             strcpy(nom, listes_creatures[random_number]);
         } else {
             // mob difficile
-            printf("hard r = %f \n", r);
             random_number = 2 + rand() % 3; // 2, 3, 4
             strcpy(nom, listes_creatures[random_number]);
         }
